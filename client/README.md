@@ -6,6 +6,8 @@
 
 ```bash
 # install dependencies
+$ cp .env.example .env
+
 $ npm install
 
 # serve with hot reload at localhost:3000
