@@ -34,7 +34,8 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="DB_CONNECTION" value="mysql"/>
-        <env name="DB_DATABASE" value="nuxt_laravel_ecommerce_testing"/>
+        <env name="DB_PORT" value="3306"/>
+        <env name="DB_DATABASE" value="bidding_ecommerce"/>
         <env name="DB_USERNAME" value="root"/>
         <env name="DB_PASSWORD" value="root"/>
     </php>

@@ -30,9 +30,10 @@ Route::group(['middleware' => 'auth:api'], function () {
         ],
     ]);
 
-    Route::post('products/{product}/bid', 'Products\ProductsController@bid');
+    Route::post('bid/{product}', 'Bidding\BiddingController@store');
+
+    Route::apiResource('addresses', 'Addresses\AddressesController');
 });
 
-Route::apiResource('addresses', 'Addresses\AddressesController');
 Route::apiResource('categories', 'Categories\CategoriesController');
 Route::apiResource('products', 'Products\ProductsController');

@@ -66,10 +66,18 @@ class Product extends Model
     }
 
     /**
+     * First bid
+     */
+    public function first_bid()
+    {
+        return $this->bids()->take(1);
+    }
+
+    /**
      * Last bid
      */
-    public function lastBid()
+    public function last_bid()
     {
-        return $this->bids()->orderBy('bids.id', 'DESC')->first();
+        return $this->bids()->orderBy('id', 'DESC')->take(1);
     }
 }

@@ -31,10 +31,12 @@ class BidsRequest extends FormRequest
                 'required',
                 'numeric',
                 function ($attribute, $value, $fail) {
-                    $productLastBid = Product::findOrFail(request('product_id'))->lastBid();
+                    $productLastBid = Product::findOrFail(request('product_id'))->last_bid()->first();
 
                     if ($productLastBid && (float) $value <= $productLastBid->bid_value) {
-                        $minBidValue = (new Money($productLastBid->bid_value + 1))->formatted();
+                        $minBidPrice = $productLastBid->bid_value + 1;
+
+                        $minBidValue = (new Money($minBidPrice * 100))->formatted();
 
                         return $fail("Bid value is invalid. The minimum bid is $minBidValue");
                     }

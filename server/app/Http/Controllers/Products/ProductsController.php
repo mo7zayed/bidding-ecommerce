@@ -34,28 +34,7 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(['variations.type', 'variations.stock', 'variations.product']);
-
-        return Respond::make(
-            new ProductResource($product)
-        );
-    }
-
-    /**
-     * Bid on a product.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function bid(Product $product, BidsRequest $request)
-    {
-        DB::transaction(function () use ($product, $request) {
-            auth()->user()->bids()->create([
-                'product_id' => $product->id,
-                'bid_value' => $request->bid_value
-            ]);
-        }, 5);
-
-        $product->load(['variations.type', 'variations.stock', 'variations.product']);
+        $product->load(['variations.type', 'variations.stock', 'variations.product', 'first_bid', 'last_bid']);
 
         return Respond::make(
             new ProductResource($product)

@@ -12,11 +12,10 @@ class ProductResource extends ProductIndexResource
      */
     public function toArray($request)
     {
-        $lastBid = $this->lastBid();
-
         return array_merge(parent::toArray($request), [
             'variations' => ProductVariationResource::collection($this->variations->groupBy('type.name')),
-            'last_bid' => $lastBid
+            'first_bid' => $this->first_bid,
+            'last_bid' => $this->last_bid,
         ]);
     }
 }
