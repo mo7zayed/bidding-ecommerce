@@ -16,6 +16,7 @@ class ProductResource extends ProductIndexResource
             'variations' => ProductVariationResource::collection($this->variations->groupBy('type.name')),
             'first_bid' => $this->first_bid,
             'last_bid' => $this->last_bid,
+            'is_auto_bidding_enabled' => auth()->check() ? auth()->user()->isAutobiddingEnabledFor($this->id) : false,
         ]);
     }
 }

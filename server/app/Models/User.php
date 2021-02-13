@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'max_bid'
     ];
 
     /**
@@ -92,5 +92,37 @@ class User extends Authenticatable implements JWTSubject
     public function bids(): HasMany
     {
         return $this->hasMany(Bid::class, 'user_id');
+    }
+
+    /**
+     * User bids relation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function autoBiddingProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'user_product_autobids', 'user_id', 'product_id')->withTimestamps();
+    }
+
+    /**
+     * Checks if the auto bidding is enabled for a product
+     *
+     * @param integer $product_id
+     *
+     * @return boolean
+     */
+    public function isAutobiddingEnabledFor(int $product_id): bool
+    {
+        return $this->autoBiddingProducts()->where('products.id', $product_id)->exists();
+    }
+
+    /**
+     * Determines if the user has unlimited max bid
+     *
+     * @return boolean
+     */
+    public function hasUnlimitedMaxBid(): bool
+    {
+        return (float) $this->max_bid == 0;
     }
 }

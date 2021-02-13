@@ -62,6 +62,10 @@
               </a>
 
               <div class="navbar-dropdown">
+                <nuxt-link to="/settings" @click.prevent class="navbar-item">
+                  Settings & Configurations
+                </nuxt-link>
+
                 <a href="#" @click.prevent="logout()" class="navbar-item">
                   Logout
                 </a>

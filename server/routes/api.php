@@ -22,6 +22,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('logout', 'Auth\AuthController@logout');
         Route::post('refresh', 'Auth\AuthController@refresh');
         Route::post('me', 'Auth\AuthController@me');
+        Route::post('me/update/configurations', 'User\UserConfigurationsController@update');
     });
 
     Route::resource('cart', 'Cart\CartController', [
@@ -30,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         ],
     ]);
 
+    Route::post('enable-auto-bidding', 'Bidding\BiddingController@toggleAutoBidding');
     Route::post('bid/{product}', 'Bidding\BiddingController@store');
 
     Route::apiResource('addresses', 'Addresses\AddressesController');
