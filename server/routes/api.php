@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     ]);
 
     Route::post('enable-auto-bidding', 'Bidding\BiddingController@toggleAutoBidding');
+    Route::post('user-last-bid', 'Bidding\BiddingController@userLastBid');
     Route::post('bid/{product}', 'Bidding\BiddingController@store');
 
     Route::apiResource('addresses', 'Addresses\AddressesController');

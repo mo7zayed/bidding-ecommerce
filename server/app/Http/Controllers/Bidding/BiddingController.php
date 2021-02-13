@@ -7,6 +7,7 @@ use App\Helpers\Http\Respond;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BidsRequest;
 use App\Http\Requests\ToggleAutobiddingRequest;
+use App\Http\Requests\UserLastBidRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -50,5 +51,19 @@ class BiddingController extends Controller
         auth()->user()->autoBiddingProducts()->{$action}($request->product_id);
 
         return Respond::make('Success');
+    }
+
+    /**
+     * Get user last bid on a product
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function userLastBid(UserLastBidRequest $request)
+    {
+        $lastbid = auth()->user()->bids()->whereProductId($request->product_id)->latest()->first();
+
+        return Respond::make([
+            'user_last_bid' => optional($lastbid)->bid_value ?? 0
+        ]);
     }
 }

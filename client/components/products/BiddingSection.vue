@@ -8,13 +8,15 @@
       @hide="showSuccessMsg = false"
     ></success-msg>
 
-    <h3 class="title is-3">Bidding</h3>
+    <template v-if="endTime && isBiddingTimePassed">
+      <h3 class="title is-3">Bidding</h3>
 
-    <template v-if="bid_end_time">
-      <h5>Bidding will end at: {{ bid_end_time }}</h5>
+      <h5>Bidding will end at: {{ new Date(endTime) }}</h5>
+
+      <h5>Your last bid: {{ user_last_bid }}</h5>
 
       <no-ssr>
-        <vac :end-time="new Date(bid_end_time).getTime() + 1 * 60 * 60 * 1000">
+        <vac :end-time="endTime">
           <span slot="process" slot-scope="{ timeObj }">{{
             `Lefttime: ${timeObj.m}:${timeObj.s}`
           }}</span>
@@ -24,7 +26,7 @@
       <br />
     </template>
 
-    <div class="field has-addons">
+    <div class="field has-addons" v-if="isBiddingTimePassed">
       <div class="control">
         <div class="is-fullwidth">
           <input class="input" type="number" v-model="bid_value" />
@@ -37,7 +39,7 @@
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" v-if="isBiddingTimePassed">
       <label class="checkbox">
         <input type="checkbox" v-model="toggle_auto_bidding" @input="toggleAutoBidding">
         Enable auto bidding
@@ -64,12 +66,30 @@ export default {
     return {
       errors: {},
       bid_value: 0,
+      user_last_bid: 0,
       bid_end_time: null,
       showSuccessMsg: false,
       toggle_auto_bidding: false
     }
   },
+  computed: {
+    endTime () {
+      if (!this.bid_end_time) {
+        return null
+      }
+
+      return new Date(this.bid_end_time).getTime() + 1 * 60 * 60 * 1000
+    },
+    isBiddingTimePassed () {
+      if (!this.endTime) {
+        return true
+      }
+
+      return new Date().getTime() < this.endTime
+    }
+  },
   created () {
+    this.getUserLastBid()
     this.bid_value = this.getLastBidValue(this.product) + 1,
     this.bid_end_time = this.getFirstBidCreationTime(this.product)
     this.toggle_auto_bidding = this.product.is_auto_bidding_enabled
@@ -79,6 +99,13 @@ export default {
       await this.$axios.$post(`enable-auto-bidding`, {
         product_id: this.product.id
       })
+    },
+    async getUserLastBid () {
+      const response = await this.$axios.$post(`user-last-bid`, {
+        product_id: this.product.id
+      })
+
+      this.user_last_bid = response.payload.user_last_bid
     },
     async bid() {
       try {
@@ -91,6 +118,8 @@ export default {
         this.errors = {}
         this.bid_value = this.getLastBidValue(response.payload) + 1
         this.bid_end_time = this.getFirstBidCreationTime(response.payload)
+
+        this.getUserLastBid()
       } catch (err) {
         this.showSuccessMsg = false
         this.errors = err.response.data.errors

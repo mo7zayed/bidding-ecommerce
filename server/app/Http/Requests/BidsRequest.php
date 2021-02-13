@@ -31,7 +31,11 @@ class BidsRequest extends FormRequest
                 'required',
                 'numeric',
                 function ($attribute, $value, $fail) {
-                    $productLastBid = Product::findOrFail(request('product_id'))->last_bid()->first();
+                    $product = Product::findOrFail(request('product_id'));
+
+                    $product->load(['first_bid', 'last_bid']);
+
+                    $productLastBid = $product->last_bid->first();
 
                     if ($productLastBid && (float) $value <= $productLastBid->bid_value) {
                         $minBidPrice = $productLastBid->bid_value + 1;
@@ -43,6 +47,12 @@ class BidsRequest extends FormRequest
 
                     if ((float) $value < config('bidding.min_bid_value')) {
                         return  $fail("Minimum bid value is " . config('bidding.min_bid_value'));
+                    }
+
+                    $productFirstBid = $product->first_bid->first();
+
+                    if ($productFirstBid && $productFirstBid->created_at->addHours(1)->isPast()) {
+                        return $fail("Bidding time ended good luck next time");
                     }
                 }
             ]

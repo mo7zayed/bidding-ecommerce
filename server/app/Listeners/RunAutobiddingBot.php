@@ -19,14 +19,16 @@ class RunAutobiddingBot implements ShouldQueue
      */
     public function handle($event)
     {
+        $bid_value = (float) ($event->last_bid_value + 1);
+
         $users = User::whereKeyNot($event->user->id)->whereHas(
             'autoBiddingProducts',
             fn ($query) => $query->where('products.id', $event->product_id)
-        )->cursor();
+        )->where(function ($query) use ($bid_value) {
+            return $query->where('max_bid', '<', $bid_value)->orWhere('max_bid', (float) 0);
+        })->cursor();
 
         foreach ($users as $user) {
-            $bid_value = (float) ($event->last_bid_value + 1);
-
             if (! $user->hasUnlimitedMaxBid() && $bid_value > (float) $user->max_bid) {
                 continue;
             }
