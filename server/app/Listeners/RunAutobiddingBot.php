@@ -25,25 +25,18 @@ class RunAutobiddingBot implements ShouldQueue
         )->cursor();
 
         foreach ($users as $user) {
-            logger("Start");
             $bid_value = (float) ($event->last_bid_value + 1);
 
             if (! $user->hasUnlimitedMaxBid() && $bid_value > (float) $user->max_bid) {
                 continue;
             }
 
-            logger("Passed check");
-
             dispatch(function () use ($user, $event, $bid_value) {
-                logger("Into job check");
-
                 DB::transaction(function () use ($user, $event, $bid_value) {
                     $user->bids()->create([
                         'product_id' => $event->product_id,
                         'bid_value' => $bid_value
                     ]);
-
-                    logger("Auto bid created");
                 }, 5);
             });
         }
